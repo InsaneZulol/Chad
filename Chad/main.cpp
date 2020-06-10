@@ -3,12 +3,12 @@
 
 #include <iostream>
 #include <mmdeviceapi.h>
-#include <comdef.h>  // Declares _com_error
+#include <comdef.h>  // _com_error
 #include <functiondiscoverykeys.h> // prop_key
 #include <system_error>
-#include <fcntl.h>  
-#include <io.h>  
-
+#include <fcntl.h>  // setmode
+#include <io.h> // setmode
+#include <atlbase.h> //CComPtr
 
 
 
@@ -20,90 +20,60 @@ inline void throw_if_fail(HRESULT hr)
 	}
 }
 
-#define EXIT_ON_ERROR(hres)  \
-              if (FAILED(hres)) { goto Exit; }
-#define SAFE_RELEASE(punk)  \
-              if ((punk) != NULL)  \
-                { (punk)->Release(); (punk) = NULL; }
-
-//https://docs.microsoft.com/en-us/windows/win32/learnwin32/error-handling-in-com
-
-const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
-const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
 
 void PrintEndpointNames()
 {
-	HRESULT hr = S_OK;
-	IMMDeviceEnumerator* ptr_enumerator = NULL;
-	IMMDeviceCollection* ptr_collection = NULL;
-	IMMDevice* ptr_endpoint = NULL;
-	IPropertyStore* ptr_propertoryStore = NULL;
-	LPWSTR pwszID = NULL;
-	_com_error err(hr);
-	LPCTSTR errMsg = err.ErrorMessage();
+	const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
+	const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
 
-	hr = CoCreateInstance(
-		CLSID_MMDeviceEnumerator, NULL,
-		CLSCTX_ALL, IID_IMMDeviceEnumerator,
-		(void**)&ptr_enumerator);
-	EXIT_ON_ERROR(hr)
-		hr = ptr_enumerator->EnumAudioEndpoints(
+	CComPtr<IMMDeviceEnumerator> ptr_enumerator = nullptr;
+	CComPtr<IMMDeviceCollection> ptr_collection;
+	CComPtr<IMMDevice> ptr_endpoint;
+	CComPtr<IPropertyStore> ptr_propertory_store;
+	LPWSTR ptr_ep_id = nullptr;
+	try
+	{
+		throw_if_fail(ptr_enumerator.CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL));
+
+		throw_if_fail(ptr_enumerator->EnumAudioEndpoints(
 			eRender, DEVICE_STATE_ACTIVE,
-			&ptr_collection);
-	EXIT_ON_ERROR(hr)
+			&ptr_collection));
 
-	UINT  count;
-	hr = ptr_collection->GetCount(&count);
-	EXIT_ON_ERROR(hr)
-
-		if (count == 0)
-		{
-			printf("No endpoints found.\n");
+		UINT count;
+		throw_if_fail(ptr_collection->GetCount(&count));
+		if (count == 0) {
+			std::wcout<<"No endpoints found." << std::endl;
 		}
 
-	// Each loop prints the name of an endpoint device.
-	for (ULONG i = 0; i < count; i++)
-	{
-		// Get pointer to endpoint number i.
-		hr = ptr_collection->Item(i, &ptr_endpoint);
-		EXIT_ON_ERROR(hr)
+		for (UINT i = 0; i < count; i++) {
+			// Get pointer to endpoint number i.
+			throw_if_fail(ptr_collection->Item(i, &ptr_endpoint));
+			// Get the endpoint ID string.
+			throw_if_fail(ptr_endpoint->GetId(&ptr_ep_id));
+			throw_if_fail(ptr_endpoint->OpenPropertyStore(
+					STGM_READ, &ptr_propertory_store));
 
-		// Get the endpoint ID string.
-		hr = ptr_endpoint->GetId(&pwszID);
-		EXIT_ON_ERROR(hr)
+			PROPVARIANT varName;
+			// Initialize container for property value.
+			PropVariantInit(&varName);
 
-		hr = ptr_endpoint->OpenPropertyStore(
-				STGM_READ, &ptr_propertoryStore);
-		EXIT_ON_ERROR(hr)
+			// Get the endpoint's friendly-name property.
+			throw_if_fail(ptr_propertory_store->GetValue(
+				PKEY_Device_FriendlyName, &varName));
 
-		PROPVARIANT varName;
-		// Initialize container for property value.
-		PropVariantInit(&varName);
-
-		// Get the endpoint's friendly-name property.
-		hr = ptr_propertoryStore->GetValue(
-			PKEY_Device_FriendlyName, &varName);
-		EXIT_ON_ERROR(hr)
-
-		std::wcout << "Endpoint " << i << ": " << pwszID << "name: " << varName.pwszVal << std::endl;
-
-		CoTaskMemFree(pwszID);
-		pwszID = NULL;
-		PropVariantClear(&varName);
-		SAFE_RELEASE(ptr_propertoryStore)
-		SAFE_RELEASE(ptr_endpoint)
+			std::wcout << "Endpoint " << i << ": " << ptr_ep_id << " name: " << varName.pwszVal << std::endl;
+			ptr_endpoint.Release(); // non-safe relase?
+			ptr_propertory_store.Release(); // non-safe relase?
+			ptr_ep_id = nullptr;
+			CoTaskMemFree(ptr_ep_id);
+			PropVariantClear(&varName);
+		}
 	}
-	SAFE_RELEASE(ptr_enumerator)
-		SAFE_RELEASE(ptr_collection)
-		return;
-
-Exit:
-	std::cout << "Error: " << std::endl;
-	CoTaskMemFree(pwszID);
-	SAFE_RELEASE(ptr_enumerator)
-		SAFE_RELEASE(ptr_collection)
-		SAFE_RELEASE(ptr_endpoint)
-		SAFE_RELEASE(ptr_propertoryStore)
+	catch (_com_error err)
+	{
+		std::wcout << "Exception occured: " << err.ErrorMessage() << std::endl; // a little more todo here
+		// Handle error.
+	}
 }
 
 int main()
@@ -111,17 +81,17 @@ int main()
 	fflush(stdout);
 	SetConsoleOutputCP(CP_UTF8);
 	_setmode(_fileno(stdout), _O_U8TEXT); // from now on remember to either: a) only use wcout b) setmode to O_TEXT before couting
-	std::wcout << L"\n TEST: abc-¹bæ \n";
-	// initialize COM - remember to cleanup
-	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED |
-		COINIT_DISABLE_OLE1DDE);
+	// initialize COM
+	try {
+		throw_if_fail(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED |
+			COINIT_DISABLE_OLE1DDE));
 
-	if (SUCCEEDED(hr)) {
 		PrintEndpointNames();
 	}
-	else {
-		std::wcout << "Error initializing com library\n";
+	catch(_com_error err) {
+		std::wcout << "Exception occured while initializing com: " << err.ErrorMessage() << std::endl; // a little more todo here
 	}
+	CoUninitialize();
 	return 0;
 
 }
