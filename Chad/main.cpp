@@ -1,7 +1,7 @@
 // main.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include <iostream>
+#include "pch.h"
 #include <mmdeviceapi.h>
 #include <comdef.h>  // _com_error
 #include <functiondiscoverykeys.h> // prop_key
@@ -9,7 +9,7 @@
 #include <fcntl.h>  // setmode
 #include <io.h> // setmode
 #include <atlbase.h> //CComPtr
-
+#include "ipolicyconfig.h"
 
 
 inline void ThrowOnFail(HRESULT hr) {
@@ -18,9 +18,21 @@ inline void ThrowOnFail(HRESULT hr) {
 	}
 }
 
+void SetDefaultEndpointOneRole(__in PCWSTR wszDeviceId, __in::ERole Role) {
 
-void PrintEndpointNames()
-{
+	const IID CLSID_PolicyConfig = __uuidof(CPolicyConfigClient);
+	const IID IID_IPolicyConfig = __uuidof(IPolicyConfig);
+	CComPtr<IPolicyConfig> ptr_PolicyConfig;
+	HRESULT Result = ptr_PolicyConfig.CoCreateInstance(CLSID_PolicyConfig);
+	if (S_OK != Result)
+		std::wcout<<"Error occured while creating CoCreateInstance CPolicyConfig" << std::endl;
+
+	Result = ptr_PolicyConfig->SetDefaultEndpoint(wszDeviceId, Role);
+	if (S_OK != Result)
+		std::wcout << "Error ptr_PolicyConfig->SetDefaultEndpoint" << std::endl;
+}
+
+void PrintEndpointNames() {
 	const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
 	const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
 
@@ -60,6 +72,11 @@ void PrintEndpointNames()
 				PKEY_Device_FriendlyName, &var_name));
 
 			std::wcout << "Endpoint " << i << ": " << ptr_ep_id << " name: " << var_name.pwszVal << std::endl;
+			std::wstring xdevid(ptr_ep_id);
+			if (xdevid == L"{0.0.0.00000000}.{20ac9196-e822-4053-88a7-8379c2836e1b}") {
+				std::wcout << "checkut!";
+				SetDefaultEndpointOneRole(ptr_ep_id, eMultimedia);
+			};
 			ptr_endpoint.Release(); // non-safe relase?
 			ptr_propertory_store.Release(); // non-safe relase?
 			ptr_ep_id = nullptr;
@@ -72,6 +89,13 @@ void PrintEndpointNames()
 		std::wcout << "Exception occured: " << err.ErrorMessage() << std::endl; // a little more todo here
 		// Handle error.
 	}
+}
+
+void nPrintEndpointNames(const std::vector<std::string>& input) {
+	// for_each(auto i& : Collection.rendering_devices()) {
+	//		std::wcout << i;
+	// }
+	// fflush(stdout);
 }
 
 int main()
@@ -92,4 +116,10 @@ int main()
 	CoUninitialize();
 	return 0;
 
+
+	//		on input 'list':
+	//			print devices
+
+	//		on input 'set':
+	//			set default audio endpoint
 }
