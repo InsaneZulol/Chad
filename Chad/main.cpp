@@ -10,13 +10,8 @@
 #include <io.h> // setmode
 #include <atlbase.h> //CComPtr
 #include "ipolicyconfig.h"
+#include "devices.h"
 
-
-inline void ThrowOnFail(HRESULT hr) {
-	if (FAILED(hr)) {
-		throw _com_error(hr);
-	}
-}
 
 void SetDefaultEndpointOneRole(__in PCWSTR wszDeviceId, __in::ERole Role) {
 
@@ -39,17 +34,18 @@ void PrintEndpointNames() {
 	CComPtr<IMMDeviceEnumerator> ptr_enumerator = nullptr;
 	CComPtr<IMMDeviceCollection> ptr_collection;
 	CComPtr<IMMDevice> ptr_endpoint;
-	CComPtr<IPropertyStore> ptr_propertory_store;
+	CComPtr<IPropertyStore> ptr_property_store;
 	LPWSTR ptr_ep_id = nullptr;
 	try
 	{
+
 		ThrowOnFail(ptr_enumerator.CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL));
 
 		ThrowOnFail(ptr_enumerator->EnumAudioEndpoints(
 			eRender, DEVICE_STATE_ACTIVE,
 			&ptr_collection));
 
-		UINT num_devices;
+		UINT num_devices = 0;
 		ThrowOnFail(ptr_collection->GetCount(&num_devices));
 		if (num_devices == 0) {
 			std::wcout<<"No endpoints found." << std::endl;
@@ -61,14 +57,14 @@ void PrintEndpointNames() {
 			// Get pointer to endpoint ID string.
 			ThrowOnFail(ptr_endpoint->GetId(&ptr_ep_id));
 			ThrowOnFail(ptr_endpoint->OpenPropertyStore(
-					STGM_READ, &ptr_propertory_store));
+					STGM_READ, &ptr_property_store));
 
 			// Initialize container for property value.
 			PROPVARIANT var_name;
 			PropVariantInit(&var_name);
 
 			// Get the endpoint's friendly-name property.
-			ThrowOnFail(ptr_propertory_store->GetValue(
+			ThrowOnFail(ptr_property_store->GetValue(
 				PKEY_Device_FriendlyName, &var_name));
 
 			std::wcout << "Endpoint " << i << ": " << ptr_ep_id << " name: " << var_name.pwszVal << std::endl;
@@ -78,7 +74,7 @@ void PrintEndpointNames() {
 				SetDefaultEndpointOneRole(ptr_ep_id, eMultimedia);
 			};
 			ptr_endpoint.Release(); // non-safe relase?
-			ptr_propertory_store.Release(); // non-safe relase?
+			ptr_property_store.Release(); // non-safe relase?
 			ptr_ep_id = nullptr;
 			CoTaskMemFree(ptr_ep_id);
 			PropVariantClear(&var_name);
@@ -108,18 +104,13 @@ int main()
 		ThrowOnFail(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED |
 			COINIT_DISABLE_OLE1DDE));
 
-		PrintEndpointNames();
+		// PrintEndpointNames();
+		Devices devices;
+		
 	}
 	catch(_com_error err) {
 		std::wcout << "Exception occured while initializing com: " << err.ErrorMessage() << std::endl; // a little more todo here
 	}
 	CoUninitialize();
 	return 0;
-
-
-	//		on input 'list':
-	//			print devices
-
-	//		on input 'set':
-	//			set default audio endpoint
 }
