@@ -13,7 +13,7 @@
 #include "devices.h"
 
 
-void SetDefaultEndpointOneRole(__in PCWSTR wszDeviceId, __in::ERole Role) {
+void SetDefaultDevice(__in PCWSTR wszDeviceId, __in::ERole Role) {
 
 	const IID CLSID_PolicyConfig = __uuidof(CPolicyConfigClient);
 	const IID IID_IPolicyConfig = __uuidof(IPolicyConfig);
@@ -71,7 +71,7 @@ void PrintEndpointNames() {
 			std::wstring xdevid(ptr_ep_id);
 			if (xdevid == L"{0.0.0.00000000}.{20ac9196-e822-4053-88a7-8379c2836e1b}") {
 				std::wcout << "checkut!";
-				SetDefaultEndpointOneRole(ptr_ep_id, eMultimedia);
+				SetDefaultDevice(ptr_ep_id, eMultimedia);
 			};
 			ptr_endpoint.Release(); // non-safe relase?
 			ptr_property_store.Release(); // non-safe relase?

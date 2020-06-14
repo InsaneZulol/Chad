@@ -17,7 +17,7 @@ inline void ThrowOnFail(const HRESULT hr) {
 struct Endpoint {
 	std::wstring device_id;
 	std::wstring device_name;
-	// role needed?
+	EDataFlow role;
 };
 
 class Devices {
