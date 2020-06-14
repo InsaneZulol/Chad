@@ -158,6 +158,7 @@
   <ItemGroup>
     <ClInclude Include="console_utilities.h" />
     <ClInclude Include="devices.h" />
+    <ClInclude Include="endpoint.h" />
     <ClInclude Include="ipolicyconfig.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>

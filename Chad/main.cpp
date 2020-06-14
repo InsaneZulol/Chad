@@ -9,6 +9,8 @@
 #include <fcntl.h>  // setmode
 #include <io.h> // setmode
 #include <atlbase.h> //CComPtr
+
+#include "console_utilities.h"
 #include "ipolicyconfig.h"
 #include "devices.h"
 
@@ -105,7 +107,10 @@ int main()
 			COINIT_DISABLE_OLE1DDE));
 
 		// PrintEndpointNames();
+		ConsoleUtilities console;
 		Devices devices;
+		console.PrintEndpointNames(devices.render_list_, devices.capture_list_);
+		//console.PrintEndpointNames(devices.capture_list_);
 		
 	}
 	catch(_com_error err) {

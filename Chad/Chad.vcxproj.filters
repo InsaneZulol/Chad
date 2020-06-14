@@ -38,5 +38,8 @@
     <ClInclude Include="ipolicyconfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="endpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <vector>
-#include <string>
+#include "pch.h"
 #include <mmdeviceapi.h>
 #include <atlbase.h> //CComPtr
 #include <comdef.h>
 #include <functiondiscoverykeys.h>
+#include "endpoint.h"
 
 
 inline void ThrowOnFail(const HRESULT hr) {
@@ -14,17 +14,12 @@ inline void ThrowOnFail(const HRESULT hr) {
 	}
 }
 
-struct Endpoint {
-	std::wstring device_id;
-	std::wstring device_name;
-	EDataFlow role;
-};
-
 class Devices {
 public:
 	Devices();
-	void Update();
+	void Update(EDataFlow);
 	void SetDefaultRender();
+	void SetDefaultCapture();
 private:
 	const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
 	const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
@@ -34,5 +29,7 @@ private:
 	CComPtr<IMMDevice> ptr_endpoint_;
 	CComPtr<IPropertyStore> ptr_property_store_;
 	CComHeapPtr<WCHAR> ptr_ep_id_;
-	std::vector<Endpoint> list_;
+public:
+	std::vector<Endpoint> render_list_;
+	std::vector<Endpoint> capture_list_;
 };
