@@ -5,11 +5,13 @@
 #include <fcntl.h> // setmode
 #include <io.h> // setmode
 #include "endpoint.h"
-class ConsoleUtilities {
+namespace utilities {
+	class ConsoleUtilities {
 
- public:
-	ConsoleUtilities();
-	void PrintEndpointNames(const std::vector<Endpoint>& render_devices, const std::vector<Endpoint>& recording_devices);
-	void PrintEndpointNames(const std::vector<Endpoint>& input);
-};
+	public:
+		ConsoleUtilities();
+		void PrintEndpointNames(const std::vector<Endpoint>& render_devices, const std::vector<Endpoint>& recording_devices);
+		void PrintEndpointNames(const std::vector<Endpoint>& input);
+	};
 
+}
