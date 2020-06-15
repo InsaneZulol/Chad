@@ -23,7 +23,7 @@ public:
 private:
 	const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
 	const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
-
+	
 	CComPtr<IMMDeviceEnumerator> ptr_enumerator_ = nullptr;
 	CComPtr<IMMDeviceCollection> ptr_collection_;
 	CComPtr<IMMDevice> ptr_endpoint_;
