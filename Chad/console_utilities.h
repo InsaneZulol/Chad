@@ -19,8 +19,8 @@ namespace utilities {
 		ConsoleUtilities();
 		int SetOutputMode(int code_page, int translation_mode);
 		void HandleInput(int argc, char* argv[]);
-		void PrintEndpointsColumn(const std::vector<Endpoint>& render_devices, const std::vector<Endpoint>& recording_devices) const;
-		void PrintEndpointNames(const std::vector<Endpoint>& input, EDataFlow dir) const;
+		void PrintEndpointsColumn() const;
+		void PrintEndpointNames(EDataFlow dir) const;
 	};
 
 }

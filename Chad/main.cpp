@@ -99,40 +99,16 @@ int main(int argc, char* argv[])
 
 		// PrintEndpointNames();
 		utilities::ConsoleUtilities console;
-		console.SetOutputMode(CP_UTF8, _O_U8TEXT);
 		Devices devices;
-		console.PrintEndpointsColumn(devices.render_list_, devices.capture_list_);
 		console.HandleInput(argc, argv);
-		//console.PrintEndpointNames(devices.capture_list_);
-		// if (argc <= 1) {
-		// 	std::wcout << "Welcome in Chad.\n" << "Type help to list available commands." << std::endl;
-		//
-		// 	// working on non-wide chars might be a problem?
-		// 	std::string input;
-		// 	std::cin >> input;
-		// 	if(input == "help") {
-		// 		std::wcout << "Welcome in Chad.\n" << "Available parameters:" << std::endl;
-		// 		std::wcout << "list, li, l, print,  - to list available audio devices" << std::endl;
-		// 		std::wcout << "set, change, select, sel - to set selected audio device as default system one" << std::endl;
-		// 		std::wcout << "set, change, select, sel - to set selected audio device as default system one" << std::endl;
-		// 	}
-		// 	// while i getline tutaj
-		// };
-		// if (argc == 2 ) {
-		// 	const std::string action(argv[1]);
-		// 	if (action == "help") {
-		// 		std::wcout << "Welcome in Chad.\n" << "Available parameters:" << std::endl;
-		// 		std::wcout << "list, li, l, print,  - to list available audio devices" << std::endl;
-		// 		std::wcout << "set, change, select, sel - to set selected audio device as default system one" << std::endl;
-		// 		std::wcout << "set, change, select, sel - to set selected audio device as default system one" << std::endl;
-		//
-		// 	}
-		// }
 
-	} catch(_com_error err) {
+	} catch(_com_error& err) {
 		std::wcout << "Exception occured while initializing com: " << err.ErrorMessage() << std::endl; // a little more todo here
-	} catch (...) {
-		std::wcout << "Unknown exception " << std::endl; // a little more todo here
+	} catch (const std::out_of_range & err) {
+		std::cerr << "Out of Range error: " << err.what() << '\n';
+	}
+	catch (...) {
+		std::wcout << "Unknown exception " << std::endl;
 	}
 	CoUninitialize();
 	return 0;

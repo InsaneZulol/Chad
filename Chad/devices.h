@@ -18,8 +18,7 @@ class Devices {
 public:
 	Devices();
 	void Update(EDataFlow);
-	void SetDefaultRender();
-	void SetDefaultCapture();
+	void SetDefaultDevice(__in PCWSTR wszDeviceId, __in::ERole Role);
 private:
 	const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
 	const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
