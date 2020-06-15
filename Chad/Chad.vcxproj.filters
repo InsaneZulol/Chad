@@ -41,5 +41,8 @@
     <ClInclude Include="endpoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="string_literals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

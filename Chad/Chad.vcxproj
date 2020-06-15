@@ -161,6 +161,7 @@
     <ClInclude Include="endpoint.h" />
     <ClInclude Include="ipolicyconfig.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="string_literals.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

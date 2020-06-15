@@ -2,17 +2,11 @@
 //
 
 #include "pch.h"
-#include <mmdeviceapi.h>
 #include <comdef.h>  // _com_error
-#include <functiondiscoverykeys.h> // prop_key
 #include <system_error>
-#include <fcntl.h>  // setmode
-#include <io.h> // setmode
-#include <atlbase.h> //CComPtr
-
 #include "console_utilities.h"
-#include "ipolicyconfig.h"
 #include "devices.h"
+#include "ipolicyconfig.h"
 
 
 void SetDefaultDevice(__in PCWSTR wszDeviceId, __in::ERole Role) {
@@ -29,66 +23,6 @@ void SetDefaultDevice(__in PCWSTR wszDeviceId, __in::ERole Role) {
 		std::wcout << "Error ptr_PolicyConfig->SetDefaultEndpoint" << std::endl;
 }
 
-void PrintEndpointNames() {
-	const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
-	const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
-
-	CComPtr<IMMDeviceEnumerator> ptr_enumerator = nullptr;
-	CComPtr<IMMDeviceCollection> ptr_collection;
-	CComPtr<IMMDevice> ptr_endpoint;
-	CComPtr<IPropertyStore> ptr_property_store;
-	LPWSTR ptr_ep_id = nullptr;
-	try
-	{
-
-		ThrowOnFail(ptr_enumerator.CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL));
-
-		ThrowOnFail(ptr_enumerator->EnumAudioEndpoints(
-			eRender, DEVICE_STATE_ACTIVE,
-			&ptr_collection));
-
-		UINT num_devices = 0;
-		ThrowOnFail(ptr_collection->GetCount(&num_devices));
-		if (num_devices == 0) {
-			std::wcout<<"No endpoints found." << std::endl;
-		}
-
-		for (UINT i = 0; i < num_devices; i++) {
-			// Get pointer to endpoint number i.
-			ThrowOnFail(ptr_collection->Item(i, &ptr_endpoint));
-			// Get pointer to endpoint ID string.
-			ThrowOnFail(ptr_endpoint->GetId(&ptr_ep_id));
-			ThrowOnFail(ptr_endpoint->OpenPropertyStore(
-					STGM_READ, &ptr_property_store));
-
-			// Initialize container for property value.
-			PROPVARIANT var_name;
-			PropVariantInit(&var_name);
-
-			// Get the endpoint's friendly-name property.
-			ThrowOnFail(ptr_property_store->GetValue(
-				PKEY_Device_FriendlyName, &var_name));
-
-			std::wcout << "Endpoint " << i << ": " << ptr_ep_id << " name: " << var_name.pwszVal << std::endl;
-			std::wstring xdevid(ptr_ep_id);
-			if (xdevid == L"{0.0.0.00000000}.{20ac9196-e822-4053-88a7-8379c2836e1b}") {
-				std::wcout << "checkut!";
-				SetDefaultDevice(ptr_ep_id, eMultimedia);
-			};
-			ptr_endpoint.Release(); // non-safe relase?
-			ptr_property_store.Release(); // non-safe relase?
-			ptr_ep_id = nullptr;
-			CoTaskMemFree(ptr_ep_id);
-			PropVariantClear(&var_name);
-		}
-	}
-	catch (_com_error err)
-	{
-		std::wcout << "Exception occured: " << err.ErrorMessage() << std::endl; // a little more todo here
-		// Handle error.
-	}
-}
-
 
 int main(int argc, char* argv[])
 {
@@ -97,8 +31,7 @@ int main(int argc, char* argv[])
 		ThrowOnFail(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED |
 			COINIT_DISABLE_OLE1DDE));
 
-		// PrintEndpointNames();
-		utilities::ConsoleUtilities console;
+		util::ConsoleUtilities console;
 		Devices devices;
 		console.HandleInput(argc, argv);
 

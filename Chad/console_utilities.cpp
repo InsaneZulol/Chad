@@ -1,26 +1,25 @@
 #include "pch.h"
 #include "console_utilities.h"
+#include "devices.h"
 #include <iomanip>
-#include <array>
+#include <fcntl.h> // setmode
+#include <io.h> // setmode
+#include "string_literals.h"
 
-namespace utilities {
-	constexpr auto SPACING = 6;
-	constexpr auto WELCOME_TEXT = "Welcome in Chad. Type help to list available commands.";
-	constexpr auto WELCOME_WHELP_TEXT = "Welcome in Chad. Available commands:";
-	constexpr auto AVAILABLE_COMMANDS_PRINT_TEXT = "list, li, l, print  - to list available audio devices";
-	constexpr auto AVAILABLE_COMMANDS_CHANGE_TEXT = "set, change, select sel - to set selected audio device as default system one";
-	constexpr auto AVAILABLE_PARAMS_PLAYBACK_TEXT = "ren, render, play, playback";
-	constexpr auto AVAILABLE_PARAMS_RECORDING_TEXT = "cap, capture, rec, recording, mic";
-	std::vector<std::string> VEC_COMMANDS_PRINT{"list", "li", "print", "l"};
-	std::vector<std::string> VEC_COMMANDS_CHANGE{"set", "change", "select", "sel"};
-	std::vector<std::string> VEC_PARAMS_PLAYBACK{"ren", "render", "play", "playback"};
-	std::vector<std::string> VEC_PARAMS_RECORDING{"cap", "capture", "rec", "recording", "mic"};
-
+namespace util {
+	
 	struct WordMatch {
 		const std::string s_;
 		WordMatch(std::string const& s) : s_(s) {}
 		bool operator()(std::string const& s) const { return s == s_; }
 	};
+
+	struct CharMatch {
+		const wchar_t c_;
+		CharMatch(const wchar_t& c) : c_(c) {}
+		bool operator()(const wchar_t& c) const { return c == c_; }
+	};
+
 
 	ConsoleUtilities::ConsoleUtilities() {
 		SetConsoleOutputCP(CP_UTF8);
@@ -29,7 +28,9 @@ namespace utilities {
 		// b) setmode to O_TEXT before couting
 		_setmode(_fileno(stdout), _O_U8TEXT);
 	}
-	
+
+	// Updates internal string list of endpoint names
+	// Return value is number of devices added to internal list
 	int ConsoleUtilities::GetDeviceNames(EDataFlow dir) {
 		Devices devices;
 
@@ -69,6 +70,9 @@ namespace utilities {
 		return -1;
 	}
 
+	// Sets console output translation mode
+	// use _O_U8TEXT for Unicode, O_TEXT for narrow charset
+	// Returns _setmode() success code
 	int ConsoleUtilities::SetOutputMode(const int code_page, const int translation_mode) {
 		fflush(stdout);
 		SetConsoleOutputCP(code_page);
@@ -122,25 +126,23 @@ namespace utilities {
 					return;
 				}
 			}
-			// set
+			// set 1
 			if (std::any_of(VEC_COMMANDS_CHANGE.begin(), VEC_COMMANDS_CHANGE.end(), WordMatch(action))) {
-				// target device
-				if (std::any_of(VEC_PARAMS_PLAYBACK.begin(), VEC_PARAMS_PLAYBACK.end(), WordMatch(param))) {
-					
+				// target device, search all render devices for id;
+				Devices devices;
+				if (std::any_of(vec_render_dev_name_.begin(), vec_render_dev_name_.end(), CharMatch(L"1"))) {
+					std::cout << "param.at(0)) : " << param.at(0) << std::endl;
+						// devices.SetDefault(id, role) ....
+						// devices.SetDefault(1, eRender) ....
 				}
+				// target device, search all capture devices for id;
 			}
 		}
 		
 	}
 
 	// Prints two columns of endpoints.
-	// Remember to pass render devices as first parameter so it's displayed under correct label in console.
 	void ConsoleUtilities::PrintEndpointsColumn() const {
-		// Get Devices names;
-		// save Devices names to own Vector of strings,
-		// Print Own vector  of strings
-		//
-		//
 		size_t longest_name_len = 0;
 		for (const auto& i : vec_render_dev_name_) {
 			if (longest_name_len < i.length()) longest_name_len = i.length();
@@ -148,13 +150,14 @@ namespace utilities {
 		const auto num_render_dev = vec_render_dev_name_.size();
 		const auto num_capture_dev = vec_capture_dev_name_.size();
 		const auto more_render = vec_capture_dev_name_.size() < vec_render_dev_name_.size();
-		std::wcout << str_render_dev_ << std::setw(longest_name_len + SPACING + 1) << str_capture_dev_ << std::endl;
+		std::wcout << STR_RENDER_DEV << std::setw(longest_name_len + SPACING + 1) << STR_CAPTURE_DEV << std::endl;
 		for (auto i = 0; i < (more_render ? num_render_dev : num_capture_dev); i++) {
 			if (i < num_render_dev) {
 				std::wcout << std::setw(longest_name_len + SPACING) << std::left  << vec_render_dev_name_.at(i);
 			}
 			// if there are still capture devices to list, but no more render devices then
-			// output an empty string, so recording devices are offset in correct position
+			// output an empty string, so recording devices on the right
+			// are offset in correct position
 			if ((i >= num_render_dev) && (i < num_capture_dev)) {
 				std::wcout << std::setw(longest_name_len + SPACING) << std::left << L" ";
 			}
@@ -167,7 +170,7 @@ namespace utilities {
 	// Prints a list of endpoints
 	void ConsoleUtilities::PrintEndpointNames(EDataFlow dir) const {
 
-		dir == eRender ? (std::wcout << str_render_dev_ << std::endl) : (std::wcout << str_capture_dev_ << std::endl);
+		dir == eRender ? (std::wcout << STR_RENDER_DEV << std::endl) : (std::wcout << STR_CAPTURE_DEV << std::endl);
 		auto dev_list = dir == eRender ? vec_render_dev_name_ : vec_capture_dev_name_;
 		for (const auto& i : dev_list) {
 			std::wcout << i << std::endl;

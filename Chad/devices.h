@@ -2,9 +2,8 @@
 
 #include "pch.h"
 #include <mmdeviceapi.h>
-#include <atlbase.h> //CComPtr
-#include <comdef.h>
-#include <functiondiscoverykeys.h>
+#include <atlbase.h> // CComPtr
+#include <comdef.h> // _com_error
 #include "endpoint.h"
 
 

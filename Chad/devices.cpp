@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "devices.h"
+#include <functiondiscoverykeys.h>
 
 
 Devices::Devices() {
+	// Unnecessary updates in few use cases?
 	Update(eRender);
 	Update(eCapture);
 	//Update(eAll); todo
@@ -55,17 +57,17 @@ void Devices::Update(const EDataFlow flow_direction) {
 }
 
 void Devices::SetDefaultDevice(__in PCWSTR wszDeviceId, __in::ERole Role) {
-	void SetDefaultDevice(__in PCWSTR wszDeviceId, __in::ERole Role) {
 
-		const IID CLSID_PolicyConfig = __uuidof(CPolicyConfigClient);
-		const IID IID_IPolicyConfig = __uuidof(IPolicyConfig);
-		CComPtr<IPolicyConfig> ptr_PolicyConfig;
-		HRESULT Result = ptr_PolicyConfig.CoCreateInstance(CLSID_PolicyConfig);
-		if (S_OK != Result)
-			std::wcout << "Error occured while creating CoCreateInstance CPolicyConfig" << std::endl;
-
-		Result = ptr_PolicyConfig->SetDefaultEndpoint(wszDeviceId, Role);
-		if (S_OK != Result)
-			std::wcout << "Error ptr_PolicyConfig->SetDefaultEndpoint" << std::endl;
-	}
+	//
+	// 	const IID CLSID_PolicyConfig = __uuidof(CPolicyConfigClient);
+	// 	const IID IID_IPolicyConfig = __uuidof(IPolicyConfig);
+	// 	CComPtr<IPolicyConfig> ptr_PolicyConfig;
+	// 	HRESULT Result = ptr_PolicyConfig.CoCreateInstance(CLSID_PolicyConfig);
+	// 	if (S_OK != Result)
+	// 		std::wcout << "Error occured while creating CoCreateInstance CPolicyConfig" << std::endl;
+	//
+	// 	Result = ptr_PolicyConfig->SetDefaultEndpoint(wszDeviceId, Role);
+	// 	if (S_OK != Result)
+	// 		std::wcout << "Error ptr_PolicyConfig->SetDefaultEndpoint" << std::endl;
+	// }
 }
