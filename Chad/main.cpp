@@ -4,25 +4,8 @@
 #include "pch.h"
 #include <comdef.h>  // _com_error
 #include <system_error>
-#include "console_utilities.h"
+#include "console_controller.h"
 #include "devices.h"
-#include "ipolicyconfig.h"
-
-
-void SetDefaultDevice(__in PCWSTR wszDeviceId, __in::ERole Role) {
-
-	const IID CLSID_PolicyConfig = __uuidof(CPolicyConfigClient);
-	const IID IID_IPolicyConfig = __uuidof(IPolicyConfig);
-	CComPtr<IPolicyConfig> ptr_PolicyConfig;
-	HRESULT Result = ptr_PolicyConfig.CoCreateInstance(CLSID_PolicyConfig);
-	if (S_OK != Result)
-		std::wcout<<"Error occured while creating CoCreateInstance CPolicyConfig" << std::endl;
-
-	Result = ptr_PolicyConfig->SetDefaultEndpoint(wszDeviceId, Role);
-	if (S_OK != Result)
-		std::wcout << "Error ptr_PolicyConfig->SetDefaultEndpoint" << std::endl;
-}
-
 
 int main(int argc, char* argv[])
 {
@@ -31,8 +14,8 @@ int main(int argc, char* argv[])
 		ThrowOnFail(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED |
 			COINIT_DISABLE_OLE1DDE));
 
-		util::ConsoleUtilities console;
 		Devices devices;
+		util::ConsoleController console;
 		console.HandleInput(argc, argv);
 
 	} catch(_com_error& err) {

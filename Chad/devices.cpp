@@ -56,18 +56,20 @@ void Devices::Update(const EDataFlow flow_direction) {
 	ptr_enumerator_.Release();
 }
 
-void Devices::SetDefaultDevice(__in PCWSTR wszDeviceId, __in::ERole Role) {
-
-	//
-	// 	const IID CLSID_PolicyConfig = __uuidof(CPolicyConfigClient);
-	// 	const IID IID_IPolicyConfig = __uuidof(IPolicyConfig);
-	// 	CComPtr<IPolicyConfig> ptr_PolicyConfig;
-	// 	HRESULT Result = ptr_PolicyConfig.CoCreateInstance(CLSID_PolicyConfig);
-	// 	if (S_OK != Result)
-	// 		std::wcout << "Error occured while creating CoCreateInstance CPolicyConfig" << std::endl;
-	//
-	// 	Result = ptr_PolicyConfig->SetDefaultEndpoint(wszDeviceId, Role);
-	// 	if (S_OK != Result)
-	// 		std::wcout << "Error ptr_PolicyConfig->SetDefaultEndpoint" << std::endl;
-	// }
+void Devices::SetDefaultDevice(unsigned int num_id, ::ERole role) {
+	std::wstring wsz_device_id;
+	for(auto const &i: render_list_) {
+		if (i.num_id == num_id) wsz_device_id = i.device_id;
+	}
+	try {
+		ThrowOnFail(ptr_policy_config.CoCreateInstance(CLSID_PolicyConfig));
+		
+		ptr_policy_config->SetDefaultEndpoint(wsz_device_id.c_str(), eMultimedia);
+		ptr_policy_config->SetDefaultEndpoint(wsz_device_id.c_str(), eCommunications);
+		
+	}catch(_com_error& err) {
+		std::wcout << "Error occured while creating CLSID_PolicyConfig" << std::endl;
+	}catch(...) {
+		std::wcout << "Unknown exception occured while creating CLSID_PolicyConfig" << std::endl;
+	}
 }

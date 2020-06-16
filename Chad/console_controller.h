@@ -5,14 +5,14 @@
 
 namespace util {
 	
-	class ConsoleUtilities {
+	class ConsoleController {
 		
 		std::vector<std::wstring> vec_render_dev_name_;
 		std::vector<std::wstring> vec_capture_dev_name_;
 	private:
 		int GetDeviceNames(EDataFlow dir);
 	public:
-		ConsoleUtilities();
+		ConsoleController();
 		int SetOutputMode(int code_page, int translation_mode);
 		void HandleInput(int argc, char* argv[]);
 		void PrintEndpointsColumn() const;

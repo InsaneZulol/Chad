@@ -151,12 +151,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="console_utilities.cpp" />
+    <ClCompile Include="console_controller.cpp" />
     <ClCompile Include="devices.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="console_utilities.h" />
+    <ClInclude Include="console_controller.h" />
     <ClInclude Include="devices.h" />
     <ClInclude Include="endpoint.h" />
     <ClInclude Include="ipolicyconfig.h" />
