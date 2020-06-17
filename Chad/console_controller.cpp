@@ -23,7 +23,12 @@ namespace util {
 		bool operator()(const std::wstring s) const { return s[0] == s_[0]; }
 	};
 
-
+	void  ShowHelp() {
+		std::wcout << WELCOME_WHELP_TEXT << std::endl
+			<< AVAILABLE_COMMANDS_PRINT_TEXT << std::endl
+			<< AVAILABLE_COMMANDS_CHANGE_TEXT << std::endl;
+	}
+	
 	ConsoleController::ConsoleController() {
 		SetConsoleOutputCP(CP_UTF8);
 		// from now on remember to either:
@@ -88,11 +93,7 @@ namespace util {
 		SetConsoleOutputCP(code_page);
 		return  _setmode(_fileno(stdout), translation_mode);
 	}
-	void  ShowWelcomeMessage() {
-		std::wcout << WELCOME_TEXT << std::endl
-		<< AVAILABLE_COMMANDS_PRINT_TEXT << std::endl
-		<< AVAILABLE_COMMANDS_CHANGE_TEXT << std::endl;
-	}
+
 	void ConsoleController::HandleInput(int argc, char* argv[]) {
 		auto rb = ren_devs_.begin(); auto re = ren_devs_.end(); // Iterator of ren_devices vector
 		auto cb = cap_devs_.begin(); auto ce = cap_devs_.end(); // Iterator of cap_devices vector
@@ -108,7 +109,7 @@ namespace util {
 		if (argc == 2) {
 			const std::string action(argv[1]);
 			if (action == "help") {
-				ShowWelcomeMessage();
+				ShowHelp();
 				return;
 			}
 			// action is list, li, l, print
