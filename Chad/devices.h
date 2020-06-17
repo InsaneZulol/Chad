@@ -18,7 +18,7 @@ class Devices {
 public:
 	Devices();
 	void Update(EDataFlow);
-	void SetDefaultDevice(unsigned int num_id, ::ERole dir);
+	void SetDefaultDevice(unsigned int num_id, ::ERole role);
 private:
 	const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
 	const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
@@ -32,6 +32,6 @@ private:
 	CComPtr<IPropertyStore> ptr_property_store_;
 	CComHeapPtr<WCHAR> ptr_ep_id_;
 public:
-	std::vector<Endpoint> render_list_;
-	std::vector<Endpoint> capture_list_;
+	std::vector<Endpoint> ren_endpoints_;
+	std::vector<Endpoint> cap_endpoints_;
 };

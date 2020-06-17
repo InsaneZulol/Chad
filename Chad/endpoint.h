@@ -4,5 +4,5 @@
 struct Endpoint {
 	std::wstring device_id;
 	std::wstring device_name;
-	UINT num_id = 0;
+	unsigned int num_id = 0;
 };

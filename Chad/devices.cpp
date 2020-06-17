@@ -4,10 +4,8 @@
 
 
 Devices::Devices() {
-	// Unnecessary updates in few use cases?
 	Update(eRender);
 	Update(eCapture);
-	//Update(eAll); todo
 }
 
 void Devices::Update(const EDataFlow flow_direction) {
@@ -41,12 +39,12 @@ void Devices::Update(const EDataFlow flow_direction) {
 		ThrowOnFail(ptr_property_store_->GetValue(
 			PKEY_Device_FriendlyName, &var_name));
 
-		const UINT num_id = render_list_.size() + capture_list_.size();
+		const UINT num_id = ren_endpoints_.size() + cap_endpoints_.size();
 		// now put required data into endpoint list
 		if (flow_direction == eRender) {
-			render_list_.push_back(Endpoint{ ptr_ep_id_.m_pData, var_name.pwszVal, num_id });
+			ren_endpoints_.push_back(Endpoint{ ptr_ep_id_.m_pData, var_name.pwszVal, num_id });
 		} else {
-			capture_list_.push_back(Endpoint{ ptr_ep_id_.m_pData, var_name.pwszVal, num_id });
+			cap_endpoints_.push_back(Endpoint{ ptr_ep_id_.m_pData, var_name.pwszVal, num_id });
 		}
 		PropVariantClear(&var_name);
 		ptr_endpoint_.Release();
@@ -58,9 +56,14 @@ void Devices::Update(const EDataFlow flow_direction) {
 
 void Devices::SetDefaultDevice(unsigned int num_id, ::ERole role) {
 	std::wstring wsz_device_id;
-	for(auto const &i: render_list_) {
+	for(auto const &i: ren_endpoints_) {
 		if (i.num_id == num_id) wsz_device_id = i.device_id;
 	}
+	if (wsz_device_id.empty()) {
+		for (auto const& i : cap_endpoints_) {
+			if (i.num_id == num_id) wsz_device_id = i.device_id;
+		}
+	};
 	try {
 		ThrowOnFail(ptr_policy_config.CoCreateInstance(CLSID_PolicyConfig));
 		

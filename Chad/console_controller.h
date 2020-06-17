@@ -7,8 +7,8 @@ namespace util {
 	
 	class ConsoleController {
 		
-		std::vector<std::wstring> vec_render_dev_name_;
-		std::vector<std::wstring> vec_capture_dev_name_;
+		std::vector<std::wstring> ren_devs_;
+		std::vector<std::wstring> cap_devs_;
 	private:
 		int GetDeviceNames(EDataFlow dir);
 	public:
