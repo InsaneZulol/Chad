@@ -31,7 +31,7 @@ namespace util {
 		bool operator()(const Endpoint& ep) const { return num_id_ == ep.num_id; }
 	};
 
-	void  ShowHelp() {
+	void ShowHelp() {
 		std::wcout << WELCOME_WHELP_TEXT << std::endl
 			<< AVAILABLE_COMMANDS_PRINT_TEXT << std::endl
 			<< AVAILABLE_COMMANDS_CHANGE_TEXT << std::endl;
@@ -68,6 +68,72 @@ namespace util {
 		return  _setmode(_fileno(stdout), translation_mode);
 	}
 
+	void ConsoleController::HandleAction(const std::string& action) const {
+		if (action == "help") {
+			ShowHelp();
+			return;
+		}
+		// action is list, li, l, print
+		if (std::any_of(cmdpb_, cmdpe_, WordMatch(action))) {
+			PrintEndpointsColumn(devices_.ren_endpoints_, devices_.cap_endpoints_);
+			return;
+		}
+		// action is set, change, select, sel
+		if (std::any_of(cmdcb_, cmdce_, WordMatch(action))) {
+			std::wcout << REPEAT_SPEC_TEXT << std::endl;
+		} else {
+			std::wcout << UNREC_COMMAND_TEXT << std::endl;
+		}
+	}
+
+	void ConsoleController::HandleActionWParam(const std::string& action, const std::string& param) const {
+		// action is print
+		if (std::any_of(cmdpb_, cmdpe_, WordMatch(action))) {
+			// action is print param is ren/render/play/playback
+			if (std::any_of(ppb_, ppe_, WordMatch(param))) {
+				PrintEndpointNames(eRender, devices_.ren_endpoints_);
+				return;
+			}
+			// action is print param is cap/capture/rec/recording/mic 
+			if (std::any_of(prb_, pre_, WordMatch(param))) {
+				PrintEndpointNames(eCapture, devices_.cap_endpoints_);
+				return;
+			}
+			// action is print, but param is unknown
+			std::wcout << UNREC_COMMAND_TEXT
+			<< std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(action) << L" "
+			<< std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(param) << std::endl;
+			return;
+		}
+		// action is set param is [n]
+		if (std::any_of(cmdcb_, cmdce_, WordMatch(action))) {
+			// search all render devices for id;
+			auto int_param = std::stoi(param);
+			std::wstring device_name;
+			if (std::any_of(rb_, re_, [int_param, &device_name](const Endpoint& ep) {
+				device_name = ep.device_name;
+				return ep.num_id == int_param;
+			})) {
+				devices_.SetDefaultDevice(int_param, eCommunications);
+				PrintOnChangedEndpoint(device_name);
+				return;
+			}
+			if (std::any_of(cb_, ce_, [int_param, &device_name](const Endpoint& ep) {
+				device_name = ep.device_name;
+				return ep.num_id == int_param;
+			})) {
+				devices_.SetDefaultDevice(int_param, eCommunications);
+				PrintOnChangedEndpoint(device_name);
+			} else {
+				std::wcout << NO_SUCH_DEVICE_TEXT << std::endl;
+			}
+		} else {
+			std::wcout << UNREC_COMMAND_TEXT
+				<< std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(action) << L" "
+				<< std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(param) << std::endl;
+		}
+	}
+
 	void ConsoleController::HandleInput(const int argc, char* argv[]) const {
 		// if program was started without params:
 		if (argc <= 1) {
@@ -76,68 +142,13 @@ namespace util {
 		// one param:
 		if (argc == 2) {
 			const std::string action(argv[1]);
-			if (action == "help") {
-				ShowHelp();
-				return;
-			}
-			// action is list, li, l, print
-			if (std::any_of(cmdpb_, cmdpe_, WordMatch(action))) {
-				PrintEndpointsColumn(devices_.ren_endpoints_, devices_.cap_endpoints_);
-				return;
-			}
-			// action is set, change, select, sel
-			if (std::any_of(cmdcb_, cmdce_, WordMatch(action))) {
-				std::wcout << REPEAT_SPEC_TEXT << std::endl;
-			} else {
-				std::wcout << UNREC_COMMAND_TEXT << std::endl;
-			}
+			HandleAction(action);
 		}
 		// two params
-		//
 		if (argc == 3) {
 			const std::string action(argv[1]); // main param: set, print
 			const std::string param(argv[2]); // additional param: cap, capture, rec, recording, mic, ren, render, play, playback / [device]
-			// action is print
-			if (std::any_of(cmdpb_, cmdpe_, WordMatch(action))) {
-				// action is print param is ren/render/play/playback
-				if (std::any_of(ppb_, ppe_, WordMatch(param))) {
-					PrintEndpointNames(eRender, devices_.ren_endpoints_);
-					return;
-				}
-				// action is print param is cap/capture/rec/recording/mic 
-				if (std::any_of(prb_, pre_, WordMatch(param))) {
-					PrintEndpointNames(eCapture, devices_.cap_endpoints_);
-				}
-				// action is print param is unknown
-				else {
-					std::wcout << UNREC_COMMAND_TEXT
-						<< std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(action) << L" "
-						<< std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(param) << std::endl;
-				}
-			}
-			// action is set param is [n]
-			if (std::any_of(cmdcb_, cmdce_, WordMatch(action))) {
-				// search all render devices for id;
-				auto int_param = std::stoi(param);
-				std::wstring device_name;
-				if (std::any_of(rb_, re_, [int_param, &device_name](const Endpoint& ep) {
-					device_name = ep.device_name;
-					return ep.num_id == int_param;
-				})) {
-					devices_.SetDefaultDevice(int_param, eCommunications);
-					PrintOnChangedEndpoint(device_name);
-					return;
-				}
-				if (std::any_of(cb_, ce_, [int_param, &device_name](const Endpoint& ep) {
-					device_name = ep.device_name;
-					return ep.num_id == int_param;
-				})) {
-					devices_.SetDefaultDevice(int_param, eCommunications);
-					PrintOnChangedEndpoint(device_name);
-				}
-			} else {
-				std::wcout << NO_SUCH_DEVICE_TEXT << std::endl;
-			}
+			HandleActionWParam(action, param);
 		}
 	}
 		
@@ -159,7 +170,7 @@ namespace util {
 		std::wcout << STR_RENDER_DEV << std::setw(spacing + 1U) << STR_CAPTURE_DEV << std::endl;
 		for (unsigned int i = 0; i < dev_count; i++) {
 			if (i < num_render_dev) {
-				std::wcout << std::setw(spacing) << std::left  << ren_col.at(i).device_name;
+				std::wcout << std::left << std::to_wstring(ren_col.at(i).num_id) << L": " << std::setw(spacing-3) << ren_col.at(i).device_name;
 			}
 			// if there are still capture devices to list, but no more render devices then
 			// output an empty string, so recording devices on the right
@@ -168,7 +179,7 @@ namespace util {
 				std::wcout << std::setw(spacing) << std::left << L" ";
 			}
 			if (i < num_capture_dev) {
-				std::wcout << std::left << cap_col.at(i).device_name << std::endl;
+				std::wcout << std::left << std::to_wstring(cap_col.at(i).num_id) << L": " << cap_col.at(i).device_name << std::endl;
 			}
 		}
 	}
@@ -181,11 +192,12 @@ namespace util {
 		else
 			std::wcout << STR_CAPTURE_DEV << std::endl;
 		for (const auto& i : dev_col) {
-			auto line = i.num_id + L" " + i.device_name;
+			auto line = std::to_wstring(i.num_id) + L": " + i.device_name;
 			std::wcout << line << std::endl;
 		}
 		fflush(stdout);
 	}
+	
 	void ConsoleController::PrintOnChangedEndpoint(const std::wstring& device_name) const {
 		std::wcout << L"[] Default device has been changed to: " << device_name << std::endl;
 	}

@@ -11,6 +11,8 @@ namespace util {
 	public:
 		ConsoleController(Devices& devices);
 		static int SetOutputMode(int code_page, int translation_mode);
+		void HandleAction(const std::string& action) const;
+		void HandleActionWParam(const std::string& action, const std::string& param) const;
 		void HandleInput(int argc, char* argv[]) const;
 		void PrintEndpointsColumn(const std::vector<Endpoint>& ren_col, const std::vector<Endpoint>& cap_col) const;
 		void PrintEndpointNames(EDataFlow dir, const std::vector<Endpoint>& dev_col) const;
