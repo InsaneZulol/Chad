@@ -13,8 +13,4 @@ namespace util {
 	constexpr auto AVAILABLE_PARAMS_RECORDING_TEXT = L"cap, capture, rec, recording, mic";
 	constexpr auto STR_RENDER_DEV = L"Playback devices: ";
 	constexpr auto STR_CAPTURE_DEV = L"Recording devices: ";
-	std::vector<std::string> COMMANDS_PRINT{ "list", "li", "print", "l" };
-	std::vector<std::string> COMMANDS_CHANGE{ "set", "change", "select", "sel" };
-	std::vector<std::string> PARAMS_PLAYBACK{ "ren", "render", "play", "playback" };
-	std::vector<std::string> PARAMS_RECORDING{ "cap", "capture", "rec", "recording", "mic" };
 }

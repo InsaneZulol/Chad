@@ -37,12 +37,25 @@ namespace util {
 			<< AVAILABLE_COMMANDS_CHANGE_TEXT << std::endl;
 	}
 	
-	ConsoleController::ConsoleController() {
+	ConsoleController::ConsoleController(Devices& devices) : devices_(devices) {
 		SetConsoleOutputCP(CP_UTF8);
 		// from now on remember to either:
 		// a) only use wcout 
 		// b) setmode to O_TEXT before couting
 		_setmode(_fileno(stdout), _O_U8TEXT);
+
+		rb_ = devices.ren_endpoints_.begin(); // Iterator of ren_endpoints_ vector
+		re_ = devices.ren_endpoints_.end(); // Iterator of ren_endpoints_ vector
+		cb_ = devices.cap_endpoints_.begin(); // Iterator of cap_endpoints_ vector
+		ce_ = devices.cap_endpoints_.end(); // Iterator of cap_endpoints_ vector
+		cmdpb_ = actions_print_.begin(); // iterator of actions_print_ vector
+		cmdpe_ = actions_print_.end(); // iterator of actions_print_ vector
+		cmdcb_ = actions_change_.begin(); // iterator of actions_change_ vector
+		cmdce_ = actions_change_.end(); // iterator of actions_change_ vector
+		ppb_ = params_playback_.begin(); // iterator of params_playback_ vector
+		ppe_ = params_playback_.end(); // iterator of params_playback_ vector
+		prb_ = params_recording_.begin(); // iterator of params_recording_ vector
+		pre_ = params_recording_.end(); // iterator of params_recording_ vector
 	}
 
 
@@ -55,19 +68,7 @@ namespace util {
 		return  _setmode(_fileno(stdout), translation_mode);
 	}
 
-	void ConsoleController::HandleInput(const int argc, char* argv[], Devices& devices) const {
-		const auto rb = devices.ren_endpoints_.begin(); // Iterator of ren_endpoints_ vector
-		const auto re = devices.ren_endpoints_.end(); // Iterator of ren_endpoints_ vector
-		const auto cb = devices.cap_endpoints_.begin(); // Iterator of cap_endpoints_ vector
-		const auto ce = devices.cap_endpoints_.end(); // Iterator of cap_endpoints_ vector
-		const auto cmdpb = COMMANDS_PRINT.begin(); // iterator of COMMANDS_PRINT vector
-		const auto cmdpe = COMMANDS_PRINT.end(); // iterator of COMMANDS_PRINT vector
-		const auto cmdcb = COMMANDS_CHANGE.begin(); // iterator of COMMANDS_CHANGE vector
-		const auto cmdce = COMMANDS_CHANGE.end(); // iterator of COMMANDS_CHANGE vector
-		const auto ppb = PARAMS_PLAYBACK.begin(); // iterator of PARAMS_PLAYBACK vector
-		const auto ppe = PARAMS_PLAYBACK.end(); // iterator of PARAMS_PLAYBACK vector
-		const auto prb = PARAMS_RECORDING.begin(); // iterator of PARAMS_RECORDING vector
-		const auto pre = PARAMS_RECORDING.end(); // iterator of PARAMS_RECORDING vector
+	void ConsoleController::HandleInput(const int argc, char* argv[]) const {
 		// if program was started without params:
 		if (argc <= 1) {
 			std::wcout << WELCOME_TEXT << std::endl;
@@ -80,12 +81,12 @@ namespace util {
 				return;
 			}
 			// action is list, li, l, print
-			if (std::any_of(cmdpb, cmdpe, WordMatch(action))) {
-				PrintEndpointsColumn(devices.ren_endpoints_, devices.cap_endpoints_);
+			if (std::any_of(cmdpb_, cmdpe_, WordMatch(action))) {
+				PrintEndpointsColumn(devices_.ren_endpoints_, devices_.cap_endpoints_);
 				return;
 			}
 			// action is set, change, select, sel
-			if (std::any_of(cmdcb, cmdce, WordMatch(action))) {
+			if (std::any_of(cmdcb_, cmdce_, WordMatch(action))) {
 				std::wcout << REPEAT_SPEC_TEXT << std::endl;
 			} else {
 				std::wcout << UNREC_COMMAND_TEXT << std::endl;
@@ -97,15 +98,15 @@ namespace util {
 			const std::string action(argv[1]); // main param: set, print
 			const std::string param(argv[2]); // additional param: cap, capture, rec, recording, mic, ren, render, play, playback / [device]
 			// action is print
-			if (std::any_of(cmdpb, cmdpe, WordMatch(action))) {
+			if (std::any_of(cmdpb_, cmdpe_, WordMatch(action))) {
 				// action is print param is ren/render/play/playback
-				if (std::any_of(ppb, ppe, WordMatch(param))) {
-					PrintEndpointNames(eRender, devices.ren_endpoints_);
+				if (std::any_of(ppb_, ppe_, WordMatch(param))) {
+					PrintEndpointNames(eRender, devices_.ren_endpoints_);
 					return;
 				}
 				// action is print param is cap/capture/rec/recording/mic 
-				if (std::any_of(prb, pre, WordMatch(param))) {
-					PrintEndpointNames(eCapture, devices.cap_endpoints_);
+				if (std::any_of(prb_, pre_, WordMatch(param))) {
+					PrintEndpointNames(eCapture, devices_.cap_endpoints_);
 				}
 				// action is print param is unknown
 				else {
@@ -115,23 +116,23 @@ namespace util {
 				}
 			}
 			// action is set param is [n]
-			if (std::any_of(cmdcb, cmdce, WordMatch(action))) {
+			if (std::any_of(cmdcb_, cmdce_, WordMatch(action))) {
 				// search all render devices for id;
 				auto int_param = std::stoi(param);
 				std::wstring device_name;
-				if (std::any_of(rb, re, [int_param, &device_name](const Endpoint& ep) {
+				if (std::any_of(rb_, re_, [int_param, &device_name](const Endpoint& ep) {
 					device_name = ep.device_name;
 					return ep.num_id == int_param;
 				})) {
-					devices.SetDefaultDevice(int_param, eCommunications);
+					devices_.SetDefaultDevice(int_param, eCommunications);
 					PrintOnChangedEndpoint(device_name);
 					return;
 				}
-				if (std::any_of(cb, ce, [int_param, &device_name](const Endpoint& ep) {
+				if (std::any_of(cb_, ce_, [int_param, &device_name](const Endpoint& ep) {
 					device_name = ep.device_name;
 					return ep.num_id == int_param;
 				})) {
-					devices.SetDefaultDevice(int_param, eCommunications);
+					devices_.SetDefaultDevice(int_param, eCommunications);
 					PrintOnChangedEndpoint(device_name);
 				}
 			} else {

@@ -14,9 +14,9 @@ int main(const int argc, char* argv[])
 		ThrowOnFail(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED |
 			COINIT_DISABLE_OLE1DDE));
 
-		Devices devices;
-		const util::ConsoleController console;
-		console.HandleInput(argc, argv, devices);
+		Devices devices; // greater
+		const util::ConsoleController console(devices);
+		console.HandleInput(argc, argv);
 
 	} catch(_com_error& err) {
 		std::cerr << "COM error occured: " << err.ErrorMessage() << std::endl; // a little more todo here
