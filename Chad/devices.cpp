@@ -3,6 +3,7 @@
 #include <functiondiscoverykeys.h>
 
 
+
 Devices::Devices() {
 	Update(eRender);
 	Update(eCapture);
@@ -18,8 +19,7 @@ void Devices::Update(const EDataFlow flow_direction) {
 	UINT num_endpoints = 0;
 	ThrowOnFail(ptr_collection_->GetCount(&num_endpoints));
 	if (num_endpoints == 0) {
-		std::wcout << "No endpoints found." << std::endl;
-		// throw ch_error("No endpoints found.");
+		throw std::runtime_error("No endpoints found");
 	}
 
 	
@@ -54,7 +54,7 @@ void Devices::Update(const EDataFlow flow_direction) {
 	ptr_enumerator_.Release();
 }
 
-void Devices::SetDefaultDevice(unsigned int num_id, ::ERole role) {
+void Devices::SetDefaultDevice(const unsigned int num_id, ::ERole role) {
 	std::wstring wsz_device_id;
 	for(auto const &i: ren_endpoints_) {
 		if (i.num_id == num_id) wsz_device_id = i.device_id;
@@ -67,12 +67,11 @@ void Devices::SetDefaultDevice(unsigned int num_id, ::ERole role) {
 	try {
 		ThrowOnFail(ptr_policy_config.CoCreateInstance(CLSID_PolicyConfig));
 		
-		ptr_policy_config->SetDefaultEndpoint(wsz_device_id.c_str(), eMultimedia);
-		ptr_policy_config->SetDefaultEndpoint(wsz_device_id.c_str(), eCommunications);
+		ThrowOnFail(ptr_policy_config->SetDefaultEndpoint(wsz_device_id.c_str(), eMultimedia));
+		ThrowOnFail(ptr_policy_config->SetDefaultEndpoint(wsz_device_id.c_str(), eCommunications));
 		
 	}catch(_com_error& err) {
-		std::wcout << "Error occured while creating CLSID_PolicyConfig" << std::endl;
-	}catch(...) {
-		std::wcout << "Unknown exception occured while creating CLSID_PolicyConfig" << std::endl;
+		std::wcout << "COM Error occured while setting default device" << std::endl;
+		throw;
 	}
 }

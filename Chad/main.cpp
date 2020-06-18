@@ -7,7 +7,7 @@
 #include "console_controller.h"
 #include "devices.h"
 
-int main(int argc, char* argv[])
+int main(const int argc, char* argv[])
 {
 	// initialize COM
 	try {
@@ -15,16 +15,19 @@ int main(int argc, char* argv[])
 			COINIT_DISABLE_OLE1DDE));
 
 		Devices devices;
-		util::ConsoleController console;
-		console.HandleInput(argc, argv);
+		const util::ConsoleController console;
+		console.HandleInput(argc, argv, devices);
 
 	} catch(_com_error& err) {
-		std::wcout << "Exception occured while initializing com: " << err.ErrorMessage() << std::endl; // a little more todo here
+		std::cerr << "COM error occured: " << err.ErrorMessage() << std::endl; // a little more todo here
 	} catch (const std::out_of_range & err) {
-		std::cerr << "Out of Range error: " << err.what() << '\n';
-	}
-	catch (...) {
-		std::wcout << "Unknown exception " << std::endl;
+		std::cerr << "Out of Range error: " << err.what() << std::endl;
+	} catch (std::exception& err) {
+		std::cerr << err.what() << std::endl;
+	} catch (std::runtime_error& err) {
+		std::cerr << err.what() << std::endl;
+	} catch (...) {
+		std::cerr << "Unknown exception " << std::endl;
 	}
 	CoUninitialize();
 	return 0;
