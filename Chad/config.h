@@ -1,8 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "sstream"
 #include "fstream"
-#include "Windows.h"
 
 class Config {
 public:

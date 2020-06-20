@@ -168,6 +168,7 @@ namespace util {
 			})) {
 				devices_.SetDefaultDevice(int_param, eCommunications);
 				PrintOnChangedEndpoint(device_name);
+				return;
 			} else {
 				std::wcout << NO_SUCH_DEVICE_TEXT << std::endl;
 			}
