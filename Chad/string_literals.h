@@ -9,8 +9,12 @@ namespace util {
 	constexpr auto NO_SUCH_DEVICE_TEXT = L"No such device on the list. Make sure you input the correct number.";
 	constexpr auto AVAILABLE_COMMANDS_PRINT_TEXT = L"list, li, l, print  - to list available audio devices";
 	constexpr auto AVAILABLE_COMMANDS_CHANGE_TEXT = L"set, change, select sel - to set audio device [num] as default system one";
+	constexpr auto AVAILABLE_COMMANDS_SAVE_TEXT = L"savedef - to set audio device [num] as default system one in config file";
+	constexpr auto AVAILABLE_COMMANDS_RESET_TEXT = L"reset - to reset your default audio devices to the ones you setup in your config.ini file";
 	constexpr auto AVAILABLE_PARAMS_PLAYBACK_TEXT = L"ren, render, play, playback";
 	constexpr auto AVAILABLE_PARAMS_RECORDING_TEXT = L"cap, capture, rec, recording, mic";
 	constexpr auto STR_RENDER_DEV = L"Playback devices: ";
 	constexpr auto STR_CAPTURE_DEV = L"Recording devices: ";
+	constexpr auto STR_SAVED_CAP_DEV = L" saved in configuration file as default recording device.";
+	constexpr auto STR_SAVED_REN_DEV = L" saved in configuration file as default playback device.";
 }

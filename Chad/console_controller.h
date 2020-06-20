@@ -11,12 +11,15 @@ namespace util {
 	public:
 		ConsoleController(Devices& devices);
 		static int SetOutputMode(int code_page, int translation_mode);
-		void HandleAction(const std::string& action) const;
-		void HandleActionWParam(const std::string& action, const std::string& param) const;
 		void HandleInput(int argc, char* argv[]) const;
 		void PrintEndpointsColumn(const std::vector<Endpoint>& ren_col, const std::vector<Endpoint>& cap_col) const;
 		void PrintEndpointNames(EDataFlow dir, const std::vector<Endpoint>& dev_col) const;
 	private:
+		// Checks the config file for default device names
+		// and attempts to set default devices accordingly.
+		void LoadDefaults() const;
+		void HandleAction(const std::string& action) const;
+		void HandleActionWParam(const std::string& action, const std::string& param) const;
 		void PrintOnChangedEndpoint(const std::wstring& device_name) const;
 		typedef std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<Endpoint>>> VepIterator;
 		typedef std::_Vector_const_iterator< std::_Vector_val<std::_Simple_types<std::string>>> VsIterator;
@@ -24,10 +27,10 @@ namespace util {
 		VepIterator re_; // Iterator of ren_endpoints_ vector
 		VepIterator cb_; // Iterator of cap_endpoints_ vector
 		VepIterator ce_; // Iterator of cap_endpoints_ vector
-		VsIterator cmdpb_; // iterator of actions_print_ vector
-		VsIterator cmdpe_; // iterator of actions_print_ vector
-		VsIterator cmdcb_; // iterator of actions_change_ vector
-		VsIterator cmdce_; // iterator of actions_change_ vector
+		VsIterator apb_; // iterator of actions_print_ vector
+		VsIterator ape__; // iterator of actions_print_ vector
+		VsIterator acb_; // iterator of actions_change_ vector
+		VsIterator ace_; // iterator of actions_change_ vector
 		VsIterator ppb_; // iterator of params_playback_ vector
 		VsIterator ppe_; // iterator of params_playback_ vector
 		VsIterator prb_; // iterator of params_recording_ vector

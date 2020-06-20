@@ -69,7 +69,8 @@ void Devices::SetDefaultDevice(const unsigned int num_id, ::ERole role) {
 		
 		ThrowOnFail(ptr_policy_config->SetDefaultEndpoint(wsz_device_id.c_str(), eMultimedia));
 		ThrowOnFail(ptr_policy_config->SetDefaultEndpoint(wsz_device_id.c_str(), eCommunications));
-		
+
+		ptr_policy_config.Release();
 	}catch(_com_error& err) {
 		std::wcout << "COM Error occured while setting default device" << std::endl;
 		throw;
