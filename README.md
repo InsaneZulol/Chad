@@ -3,7 +3,7 @@ Chad
 </h1>
 
 <p align="center">
-  <b>CH</b>ange <b>D</b>efault audio device
+  <b>Ch</b>ange default <b>a</b>udio <b>d</b>evice
 </p>
 
 <p align="center">
