@@ -1,5 +1,5 @@
 # Chad 
-
+![logo image](https://i.imgur.com/9Zx8dzQ.png)
 #### Change your default system audio device from console.
 
 
