@@ -1,7 +1,25 @@
-# Chad 
-![logo image](https://i.imgur.com/BhrUHfb.png)
-#### Change your default system audio device from console.
+<h1 align="center">
+Chad
+</h1>
 
+<p align="center">
+  <b>CH</b>ange <b>D</b>efault audio device
+</p>
+
+<p align="center">
+  <img src="https://i.imgur.com/BhrUHfb.png">
+</p>
+
+<div align="center">
+
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/InsaneZulol/Chad/graphs/commit-activity)
+[![GitHub release](https://img.shields.io/github/release/InsaneZulol/Chad.svg)](https://GitHub.com/InsaneZulol/Chad/releases/)
+[![Github all releases](https://img.shields.io/github/downloads/InsaneZulol/Chad/total.svg)](https://github.com/InsaneZulol/Chad/releases/)
+[![GitHub contributors](https://img.shields.io/github/contributors/InsaneZulol/Chad.svg)](https://GitHub.com/InsaneZulol/Chad/graphs/contributors/)
+
+</div>
+
+#### Change your default system audio device from console.
 
 If you often switch your default audio device with mmsys.cpl this little tool might make your life a little easier.
 
