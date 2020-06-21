@@ -11,10 +11,12 @@ Chad
 </p>
 
 <div align="center">
+
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/InsaneZulol/Chad/graphs/commit-activity)
 [![GitHub release](https://img.shields.io/github/release/InsaneZulol/Chad.svg)](https://GitHub.com/Naereen/StrapDown.js/releases/)
 [![Github all releases](https://img.shields.io/github/downloads/InsaneZulol/Chad/total.svg)](https://github.com/InsaneZulol/Chad/releases/)
 [![GitHub contributors](https://img.shields.io/github/contributors/InsaneZulol/Chad.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/contributors/)
+
 </div>
 
 #### Change your default system audio device from console.
