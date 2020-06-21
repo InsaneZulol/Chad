@@ -10,14 +10,14 @@ This is Windows only application.
 ### Requirements
 Windows Vista and later.
 
-### How to set up:
+### How to set up
 Set up an environmental variable for the .exe:
 - Drop chad.exe on your drive
 - Launch sysdm.cpl -> advanced tab -> Environment Variables... 
 - In "User variables %username%" click new -> [type "chad" in name; in value insert the path to chad.exe](https://i.imgur.com/8xB3yHv.png)
 - Click OK
 
-### How to use:
+### How to use
 Launch program with parameters following the .exe file:
 - __help__ - to list available commands
 - __list, li, l, print__  - to list available audio devices  
