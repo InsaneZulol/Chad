@@ -22,7 +22,7 @@ namespace util {
 		void HandleActionWParam(const std::string& action, const std::string& param) const;
 		void PrintOnChangedEndpoint(const std::wstring& device_name) const;
 		typedef std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<Endpoint>>> VepIterator;
-		typedef std::_Vector_const_iterator< std::_Vector_val<std::_Simple_types<std::string>>> VsIterator;
+		typedef std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<std::string>>> VsIterator;
 		VepIterator rb_; // Iterator of ren_endpoints_ vector
 		VepIterator re_; // Iterator of ren_endpoints_ vector
 		VepIterator cb_; // Iterator of cap_endpoints_ vector

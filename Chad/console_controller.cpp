@@ -184,6 +184,7 @@ namespace util {
 				})) {
 				cfg.SaveDefaultRender(device_name);
 				std::wcout << device_name << STR_SAVED_REN_DEV << std::endl;
+				return;
 				
 			}
 			if (std::any_of(cb_, ce_, [int_param, &device_name](const Endpoint& ep) {
@@ -192,6 +193,7 @@ namespace util {
 				})) {
 				cfg.SaveDefaultCapture(device_name);
 				std::wcout << device_name << STR_SAVED_CAP_DEV << std::endl;
+				return;
 			} else {
 				std::wcout << NO_SUCH_DEVICE_TEXT << std::endl;
 			}
