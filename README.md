@@ -23,7 +23,7 @@ Chad
 
 If you often switch your default audio device with mmsys.cpl this little tool might make your life a little easier.
 
-This is Windows only application.
+This is a Windows only application.
 
 ### Requirements
 Windows Vista and later.
